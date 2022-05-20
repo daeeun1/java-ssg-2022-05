@@ -8,19 +8,39 @@ import com.kor.java.ssg.dto.Article;
 import com.kor.java.ssg.util.Util;
 
 public class App {
-private  List<Article> articles;
-	
+	private List<Article> articles;
+
 	public App() {
 		articles = new ArrayList<>();
 	}
-	
+
+	public int getArticleIndexById(int id) {
+		for (int i = 0; i < articles.size(); i++) {
+			Article article = articles.get(i);
+
+			if (article.id == id) {
+				return i;
+			}
+		}
+		
+		return -1;
+	}
+
+	public Article getArticleById(int id) {
+		int index = getArticleIndexById(id);
+		if (index == -1) {
+			return null;
+		}
+		return articles.get(index);
+	}
+
 	public void start() {
 		System.out.println("== 프로그램 시작 ==");
-		
+
 		makeTestData();
-		
+
 		Scanner sc = new Scanner(System.in);
-		
+
 		while (true) {
 			System.out.printf("명령어) ");
 			String command = sc.nextLine();
@@ -61,84 +81,56 @@ private  List<Article> articles;
 				String[] commandBits = command.split(" ");
 				int id = Integer.parseInt(commandBits[2]);
 
-				Article foundArticle = null;
-
-				for (int i = 0; i < articles.size(); i++) {
-					Article article = articles.get(i);
-
-					if (article.id == id) {
-						foundArticle = article;
-						break;
-					}
-				}
+				Article foundArticle = getArticleById(id);
 
 				if (foundArticle == null) {
 					System.out.printf("%d번 게시물은 존재하지 않습니다.\n", id);
 					continue;
 				}
-				
+
 				foundArticle.increaseHit();
-				
+
 				System.out.printf("번호 : %d\n", foundArticle.id);
 				System.out.printf("날짜 : %s\n", foundArticle.regDate);
 				System.out.printf("제목 : %s\n", foundArticle.title);
 				System.out.printf("내용 : %s\n", foundArticle.body);
 				System.out.printf("조회 : %d\n", foundArticle.hit);
-				
+
 			} else if (command.startsWith("article modify ")) {
 				String[] commandBits = command.split(" ");
 				int id = Integer.parseInt(commandBits[2]);
 
-				Article foundArticle = null;
-
-				for (int i = 0; i < articles.size(); i++) {
-					Article article = articles.get(i);
-
-					if (article.id == id) {
-						foundArticle = article;
-						break;
-					}
-				}
+				Article foundArticle = getArticleById(id);
 
 				if (foundArticle == null) {
 					System.out.printf("%d번 게시물은 존재하지 않습니다.\n", id);
 					continue;
 				}
-				
+
 				System.out.printf("제목 : ");
 				String title = sc.nextLine();
 				System.out.printf("내용 : ");
 				String body = sc.nextLine();
-				
+
 				foundArticle.title = title;
 				foundArticle.body = body;
-				
+
 				System.out.printf("%d번 게시물이 수정되었습니다.\n", id);
-				
-			}
-			else if (command.startsWith("article delete ")) {
+
+			} else if (command.startsWith("article delete ")) {
 				String[] commandBits = command.split(" ");
 				int id = Integer.parseInt(commandBits[2]);
 
-				int foundIndex = -1;
-
-				for (int i = 0; i < articles.size(); i++) {
-					Article article = articles.get(i);
-
-					if (article.id == id) {
-						foundIndex = i;
-						break;
-					}
-				}
+				int foundIndex = getArticleIndexById(id);
 
 				if (foundIndex == -1) {
 					System.out.printf("%d번 게시물은 존재하지 않습니다.\n", id);
 					continue;
 				}
-				
+
 				articles.remove(foundIndex);
 				System.out.printf("%d번 게시물이 삭제되었습니다.\n", id);
-				
+
 			} else {
 				System.out.printf("%s(은)는 존재하지 않는 명령어 입니다.\n", command);
 			}
@@ -150,7 +142,7 @@ private  List<Article> articles;
 
 	private void makeTestData() {
 		System.out.println("테스트를 위한 데이터를 생성합니다.");
-		
+
 		articles.add(new Article(1, Util.getNowDateStr(), "제목1", "내용1", 10));
 		articles.add(new Article(2, Util.getNowDateStr(), "제목2", "내용2", 22));
 		articles.add(new Article(3, Util.getNowDateStr(), "제목3", "내용3", 33));
