@@ -80,6 +80,7 @@ public class App {
 					for (Article article : articles) {
 						if (article.title.contains(searchKeyword)) {
 							forListArticles.add(article);
+							
 						}
 					}
 					if (articles.size() == 0) {
