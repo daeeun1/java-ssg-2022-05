@@ -5,15 +5,40 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.kor.java.ssg.dto.Article;
+import com.kor.java.ssg.dto.Member;
 import com.kor.java.ssg.util.Util;
 
 public class App {
 	private List<Article> articles;
+	private List<Member> members;
 
 	public App() {
 		articles = new ArrayList<>();
+		members = new ArrayList<>();
 	}
 
+	private boolean isJoinableLoginId(String loginId) {
+		int index = getMemberIndexById(loginId);
+
+		if ( index == -1 ) {
+			return true;
+		}
+
+		return false;
+	}
+	
+	public int getMemberIndexById(String loginId) {
+		int i = 0;
+		for ( Member member : members ) {
+			if ( member.loginId.equals(loginId)) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	
 	public int getArticleIndexById(int id) {
 		int i = 0;
 		for (Article article : articles) {
@@ -22,13 +47,13 @@ public class App {
 			}
 			i++;
 		}
-		
+
 		return -1;
 	}
 
 	public Article getArticleById(int id) {
 		int index = getArticleIndexById(id);
-		
+
 		if (index != -1) {
 			return articles.get(index);
 		}
@@ -54,6 +79,46 @@ public class App {
 
 			if (command.equals("system exit")) {
 				break;
+			}
+			if (command.equals("member join")) {
+				int id = members.size() + 1;
+				String regDate = Util.getNowDateStr();
+				String loginId = null;
+				
+				while (true) {
+					System.out.printf("로그인 아이디 : ");
+					loginId = sc.nextLine();
+					if (isJoinableLoginId(loginId) == false ) {
+						System.out.printf("%s(은)는 이미 사용중인 아이디 입니다.\n", loginId);
+						continue;
+					}
+					else {
+						break;
+					}
+				}
+
+				String loginIdPw = null;
+				String loginIdPwConfirm = null;
+
+				while (true) {
+					System.out.printf("로그인 비번 : ");
+					loginIdPw = sc.nextLine();
+					System.out.printf("로그인 비번확인 : ");
+					loginIdPwConfirm = sc.nextLine();
+
+					if (loginIdPw.equals(loginIdPwConfirm)) {
+						break;
+					}
+					System.out.println("비밀번호를 다시 입력해주세요.");
+				}
+				
+				System.out.printf("이름 : ");
+				String name = sc.nextLine();
+
+				Member member = new Member(id, regDate, loginId, loginIdPw, name);
+				members.add(member);
+
+				System.out.printf("%d번 글이 생성되었습니다.\n", id);
 			} else if (command.equals("article write")) {
 				int id = articles.size() + 1;
 				String regDate = Util.getNowDateStr();
@@ -71,16 +136,16 @@ public class App {
 					System.out.println("게시물이 없습니다.");
 					continue;
 				}
-				String searchKeyword  = command.substring("article list".length()).trim();
+				String searchKeyword = command.substring("article list".length()).trim();
 				List<Article> forListArticles = articles;
-				
+
 				if (searchKeyword.length() > 0) {
 					forListArticles = new ArrayList<>();
-					
+
 					for (Article article : articles) {
 						if (article.title.contains(searchKeyword)) {
 							forListArticles.add(article);
-							
+
 						}
 					}
 					if (articles.size() == 0) {
@@ -156,6 +221,7 @@ public class App {
 		sc.close();
 		System.out.println("== 프로그램 끝 ==");
 	}
+
 
 	private void makeTestData() {
 		System.out.println("테스트를 위한 데이터를 생성합니다.");
