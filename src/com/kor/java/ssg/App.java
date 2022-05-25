@@ -19,7 +19,6 @@ public class App {
 		members = new ArrayList<>();
 	}
 
-	
 
 	
 
@@ -46,7 +45,7 @@ public class App {
 
 	public void start() {
 		System.out.println("== 프로그램 시작 ==");
-
+		System.out.println("안녕하세요");
 		makeTestData();
 
 		Scanner sc = new Scanner(System.in);
