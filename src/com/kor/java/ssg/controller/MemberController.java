@@ -6,14 +6,29 @@ import java.util.Scanner;
 import com.kor.java.ssg.dto.Member;
 import com.kor.java.ssg.util.Util;
 
-public class MemberController {
+public class MemberController extends Controller {
 	
 	private List<Member> members;
 	private Scanner sc;
+	private String command;
+	private String actionMethodName;
 	
 	public MemberController(List<Member> members, Scanner sc){
 		this.members = members;
 		this.sc = sc;
+	}
+	
+	@Override
+	public void doAction(String command, String actionMethodName) {
+		this.command = command;
+		this.actionMethodName = actionMethodName;
+		
+		switch (actionMethodName) {
+		case "join":
+			doJoin();
+			break;
+		}
+		
 	}
 	
 	private boolean isJoinableLoginId(String loginId) {
@@ -77,4 +92,6 @@ public class MemberController {
 
 		System.out.printf("%d번 글이 생성되었습니다.\n", id);
 	}
+
+	
 }

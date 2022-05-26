@@ -5,17 +5,45 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.kor.java.ssg.dto.Article;
+import com.kor.java.ssg.dto.Member;
 import com.kor.java.ssg.util.Util;
 
-public class ArticleController {
+public class ArticleController extends Controller{
 
 	private List<Article> articles;
 	private Scanner sc;
-
+	private String command;
+	private String actionMethodName;
+	
 	public ArticleController(List<Article> articles, Scanner sc) {
 		this.articles = articles;
 		this.sc = sc;
 	}
+	
+
+	public void doAction(String command, String actionMethodName) {
+		this.command = command;
+		this.actionMethodName = actionMethodName;
+		
+		switch (actionMethodName) {
+		case "write":
+			doWrite();
+			break;
+		case "detail":
+			showDetail();
+			break;
+		case "list":
+			showList();
+			break;
+		case "modify":
+			doModify();
+			break;
+		case "delete":
+			doDelete();
+			break;
+		}
+	}
+	
 	
 	public int getArticleIndexById(int id) {
 		int i = 0;
@@ -53,7 +81,7 @@ public class ArticleController {
 
 	}
 
-	public void showList(String command) {
+	public void showList() {
 		if (articles.size() == 0) {
 			System.out.println("게시물이 없습니다.");
 			return;
@@ -84,7 +112,7 @@ public class ArticleController {
 
 	}
 
-	public void showDetail(String command) {
+	public void showDetail() {
 
 		String[] commandBits = command.split(" ");
 		int id = Integer.parseInt(commandBits[2]);
@@ -107,7 +135,7 @@ public class ArticleController {
 		
 	}
 
-	public void doModify(String command) {
+	public void doModify() {
 		String[] commandBits = command.split(" ");
 		int id = Integer.parseInt(commandBits[2]);
 
@@ -130,7 +158,7 @@ public class ArticleController {
 
 	}
 
-	public void doDelete(String command) {
+	public void doDelete() {
 		String[] commandBits = command.split(" ");
 		int id = Integer.parseInt(commandBits[2]);
 
@@ -146,5 +174,8 @@ public class ArticleController {
 
 		
 	}
+
+
+
 
 }
