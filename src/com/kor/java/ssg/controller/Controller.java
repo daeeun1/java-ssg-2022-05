@@ -7,7 +7,7 @@ public abstract class Controller {
 
 	public abstract void doAction(String command, String actionMethodName);
 	public abstract void makeTestData();
-	public boolean isLogined() {
+	public static boolean isLogined() {
 		return loginedMember != null;
 	}
 }

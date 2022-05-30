@@ -1,10 +1,9 @@
 package com.kor.java.ssg.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import com.kor.java.ssg.dto.Article;
+import com.kor.java.ssg.container.Container;
 import com.kor.java.ssg.dto.Member;
 import com.kor.java.ssg.util.Util;
 
@@ -18,10 +17,9 @@ public class MemberController extends Controller {
 	public MemberController( Scanner sc){
 		this.sc = sc;
 		
-		members = new ArrayList<Member>();
+		members =  Container.memberDao.members;
 	}
 	
-	@Override
 	public void doAction(String command, String actionMethodName) {
 		this.command = command;
 		this.actionMethodName = actionMethodName;
@@ -40,48 +38,34 @@ public class MemberController extends Controller {
 			System.out.println("존재하지 않는 명령어 입니다.");
 			break;
 		}
-		
 	}
 	
 	private void doLogout() {
-		if (isLogined() == false) {
-			System.out.println("로그인 상태가 아닙니다.");
-			return;
-		}
-		
 		loginedMember = null;
 		System.out.println("로그아웃 되었습니다.");
 	}
-
-	private boolean isJoinableLoginId(String loginId) {
-		int index = getMemberIndexById(loginId);
-
-		if (index == -1) {
-			return true;
-		}
-
-		return false;
-	}
 	
-	public int getMemberIndexById(String loginId) {
-		int i = 0;
-		for (Member member : members) {
-			if (member.loginId.equals(loginId)) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-	
-	public Member getMemberById(String loginId) {
-		int index = getMemberIndexById(loginId);
-
-		if (index == -1) {
-			return null;
+	private void doLogin() {
+		System.out.printf("로그인 아이디 : ");
+		String loginId = sc.nextLine();
+		System.out.printf("로그인 비번 : ");
+		String loginPw = sc.nextLine().trim();
+		
+		Member member = getMemberByLoginId(loginId);
+		
+		if (member == null) {
+			System.out.println("해당회원은 존재하지 않습니다.");
+			return;
 		}
 		
-		return members.get(index);
+		if (member.loginIdPw.equals(loginPw) == false) {
+			System.out.println("비밀번호를 확인해주세요.");
+			return;
+		}
+		
+		loginedMember = member;
+		System.out.printf("로그인 성공!, %s님 환영합니다.\n", loginedMember.name);
+		
 	}
 	
 	public void makeTestData() {
@@ -91,32 +75,37 @@ public class MemberController extends Controller {
 		members.add(new Member(2, Util.getNowDateStr(), "user1", "user1", "유저1"));
 		members.add(new Member(3, Util.getNowDateStr(), "user2", "user2", "유저2"));
 	}
+	
+	private Member getMemberByLoginId(String loginId) {
+		int index = getMemberIndexByLoginId(loginId);
 
-	private void doLogin() {
-		if (isLogined() ) {
-			System.out.println("이미 로그인 되어있습니다.");
-			return;
+		if (index == -1) {
+			return null;
 		}
-		System.out.printf("로그인 아이디 : ");
-		String loginId = sc.nextLine();
-		System.out.printf("로그인 비번 : ");
-		String loginIdPw = sc.nextLine();
-		
-		Member member = getMemberById(loginId);
-		
-		if (member == null) {
-			System.out.println("해당회원은 존재하지 않습니다.");
-			return;
+
+		return members.get(index);
+	}
+
+	private int getMemberIndexByLoginId(String loginId) {
+		int i = 0;
+		for (Member member : members) {
+			if (member.loginId.equals(loginId)) {
+				return i;
+			}
+			i++;
 		}
-		
-		if (member.loginIdPw.equals(loginIdPw) == false) {
-			System.out.println("비밀번호를 확인해주세요.");
-			return;
+
+		return -1;
+	}
+
+	private boolean isJoinableLoginId(String loginId) {
+		int index = getMemberIndexByLoginId(loginId);
+
+		if (index == -1) {
+			return true;
 		}
-		
-		loginedMember = member;
-		System.out.printf("로그인 성공!, %s님 환영합니다.\n", loginedMember.name);
-		
+
+		return false;
 	}
 	
 	public void doJoin() {
@@ -131,9 +120,8 @@ public class MemberController extends Controller {
 			if (isJoinableLoginId(loginId) == false) {
 				System.out.printf("%s(은)는 이미 사용중인 아이디 입니다.\n", loginId);
 				continue;
-			} else {
-				break;
 			}
+				break;
 		}
 
 		String loginIdPw = null;
@@ -146,9 +134,10 @@ public class MemberController extends Controller {
 			loginIdPwConfirm = sc.nextLine();
 
 			if (loginIdPw.equals(loginIdPwConfirm)) {
-				break;
+				System.out.println("비밀번호를 다시 입력해주세요.");
+				continue;
 			}
-			System.out.println("비밀번호를 다시 입력해주세요.");
+			break;
 		}
 
 		System.out.printf("이름 : ");
