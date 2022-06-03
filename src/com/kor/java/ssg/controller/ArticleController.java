@@ -5,8 +5,8 @@ import java.util.Scanner;
 
 import com.kor.java.ssg.container.Container;
 import com.kor.java.ssg.dto.Article;
-import com.kor.java.ssg.dto.Member;
 import com.kor.java.ssg.service.ArticleService;
+import com.kor.java.ssg.service.MemberService;
 import com.kor.java.ssg.util.Util;
 
 public class ArticleController extends Controller {
@@ -15,11 +15,13 @@ public class ArticleController extends Controller {
 	private String command;
 	private String actionMethodName;
 	private ArticleService articleService;
+	private MemberService memberService;
 
 	public ArticleController(Scanner sc) {
 		this.sc = sc;
 
 		articleService = Container.articleService;
+		memberService = Container.memberService;
 	}
 
 	public void doAction(String command, String actionMethodName) {
@@ -52,8 +54,8 @@ public class ArticleController extends Controller {
 		System.out.println("테스트를 위한 게시물데이터를 생성합니다.");
 
 		Container.articleDao.add(new Article(Container.articleDao.getNewId(), Util.getNowDateStr(), 1, "제목1", "내용1", 10));
-		Container.articleDao.add(new Article(2, Util.getNowDateStr(), 2, "제목2", "내용2", 22));
-		Container.articleDao.add(new Article(3, Util.getNowDateStr(), 2, "제목3", "내용3", 33));
+		Container.articleDao.add(new Article(Container.articleDao.getNewId(), Util.getNowDateStr(), 2, "제목2", "내용2", 22));
+		Container.articleDao.add(new Article(Container.articleDao.getNewId(), Util.getNowDateStr(), 2, "제목3", "내용3", 33));
 	}
 
 	public void doWrite() {
@@ -86,16 +88,7 @@ public class ArticleController extends Controller {
 		for (int i = forPrintArticles.size() - 1; i >= 0; i--) {
 			Article article = forPrintArticles.get(i);
 
-			String writerName = null;
-
-			List<Member> members = Container.memberDao.members;
-
-			for (Member member : members) {
-				if (article.memberId == member.id) {
-					writerName = member.name;
-					break;
-				}
-			}
+			String writerName = memberService.getMemberNameById(article.memberId);
 
 			System.out.printf("%4d | %10s | %4d | %s\n", article.id, writerName, article.hit, article.title);
 		}

@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import com.kor.java.ssg.controller.ArticleController;
 import com.kor.java.ssg.controller.Controller;
+import com.kor.java.ssg.controller.ExportController;
 import com.kor.java.ssg.controller.MemberController;
 
 public class App {
@@ -15,9 +16,11 @@ public class App {
 
 		MemberController memberController = new MemberController(sc);
 		ArticleController articleController = new ArticleController(sc);
+		ExportController exportController = new ExportController(sc);
 
 		articleController.makeTestData();
 		memberController.makeTestData();
+		exportController.makeTestData();
 
 		while (true) {
 			System.out.printf("명령어) ");
@@ -47,6 +50,8 @@ public class App {
 			if (controllerName.equals("article")) {
 				controller = articleController;
 			} else if (controllerName.equals("member")) {
+				controller = memberController;
+			} else if (controllerName.equals("export")) {
 				controller = memberController;
 			} else {
 				System.out.println("존재하지 않는 명령어 입니다.\n");
